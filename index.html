@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <script>
+    // Links list
+    const links = [
+      "https://nx2bs.com/c?o=369&a=20331&s1=sx&s2=dfr",
+      "https://nx2bs.com/c?o=372&a=20331&s1=nka&s2=s&s3=e&s4=0",
+      "https://nx2bs.com/c?o=372&a=20331&s1=cha&s2=seo",
+      "https://nx2bs.com/c?o=393&a=20331&s1=seo&s2=traffic",
+      "https://nx2bs.com/c?o=58&a=20331&s1=fb&s2=paid&s3=traffic&s4=campaign"
+    ];
+
+    // Redirect function
+    window.onload = function() {
+      const randomLink = links[Math.floor(Math.random() * links.length)];
+      window.location.href = randomLink; // same tab redirect
+    };
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>
