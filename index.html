@@ -1,27 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redirecting...</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Job Offers | Fast Apply</title>
+  <meta name="description" content="Find job offers that suit you. Click below to apply directly." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Links list
-    const links = [
-      "https://nx2bs.com/c?o=369&a=20331&s1=sx&s2=dfr",
-      "https://nx2bs.com/c?o=372&a=20331&s1=nka&s2=s&s3=e&s4=0",
-      "https://nx2bs.com/c?o=372&a=20331&s1=cha&s2=seo",
-      "https://nx2bs.com/c?o=393&a=20331&s1=seo&s2=traffic",
-      "https://nx2bs.com/c?o=58&a=20331&s1=fb&s2=paid&s3=traffic&s4=campaign"
+    tailwind.config = {
+      theme: {
+        extend: {
+          transitionProperty: {
+            'height': 'height',
+            'spacing': 'margin, padding',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root { color-scheme: light dark; }
+    html { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .glass { 
+      backdrop-filter: blur(10px); 
+      -webkit-backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.7); 
+    }
+    @media (prefers-color-scheme: dark) {
+      .glass { background: rgba(20,20,20,0.6); }
+    }
+    .focus-visible:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-sky-50 via-white to-emerald-50 dark:from-zinc-900 dark:via-zinc-950 dark:to-slate-900 text-slate-800 dark:text-slate-100">
+  <main class="max-w-6xl mx-auto p-5 sm:p-8">
+    <!-- Header / Hero -->
+    <header class="relative overflow-hidden rounded-3xl shadow-xl glass border border-white/30 dark:border-white/10">
+      <div class="p-6 sm:p-10">
+        <div class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+          <span class="text-2xl" aria-hidden="true">💼</span>
+          <span class="font-semibold tracking-wide uppercase">Job Offers</span>
+        </div>
+        <h1 class="mt-2 text-3xl sm:text-4xl font-extrabold leading-tight">
+          Find Your Perfect <span class="text-emerald-600 dark:text-emerald-400">Job Opportunity</span>
+        </h1>
+        <p class="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300">
+          Direct application links. Opens in the <span class="font-semibold">same tab</span> when you click.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button id="shuffleBtn" class="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:opacity-90 transition focus-visible">
+            <span aria-hidden="true">🔀</span> Randomize Order
+          </button>
+          <button id="filterBtn" class="px-4 py-2 rounded-xl bg-white/80 dark:bg-white/10 border border-slate-200/70 dark:border-white/10 hover:bg-white dark:hover:bg-white/20 transition focus-visible">
+            <span aria-hidden="true">🔍</span> Filter Offers
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Filter Panel (hidden by default) -->
+    <div id="filterPanel" class="hidden mt-6 rounded-2xl bg-white/80 dark:bg-white/5 p-5 border border-slate-200/70 dark:border-white/10">
+      <h2 class="text-lg font-bold mb-3">Filter Options</h2>
+      <div class="flex flex-wrap gap-4">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" class="rounded border-slate-300 dark:border-slate-600 text-emerald-600 dark:text-emerald-400 focus:ring-emerald-500" checked>
+          <span>Remote</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" class="rounded border-slate-300 dark:border-slate-600 text-emerald-600 dark:text-emerald-400 focus:ring-emerald-500" checked>
+          <span>Entry Level</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" class="rounded border-slate-300 dark:border-slate-600 text-emerald-600 dark:text-emerald-400 focus:ring-emerald-500" checked>
+          <span>High Paying</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Offers Grid -->
+    <section class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-live="polite"></section>
+
+    <!-- Loading State -->
+    <div id="loading" class="hidden mt-8 text-center py-10">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-600 border-t-transparent dark:border-emerald-400 dark:border-t-transparent" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-10 text-center text-sm text-slate-500 dark:text-slate-400">
+      <p>© <span id="year"></span> Fast Apply. All rights reserved.</p>
+      <p class="mt-1">Made with <span aria-hidden="true">❤️</span> for job seekers</p>
+    </footer>
+  </main>
+
+  <script>
+    // --- Config: your offer links here ---
+    const offers = [
+      { 
+        id: 1, 
+        title: 'Digital Marketing Specialist', 
+        note: 'Fast apply • High intent', 
+        url: 'https://nx2bs.com/c?o=369&a=20331&s1=sx&s2=dfr',
+        tags: ['remote', 'marketing']
+      },
+      { 
+        id: 2, 
+        title: 'Remote Customer Support', 
+        note: 'Remote-friendly • Flexible hours', 
+        url: 'https://nx2bs.com/c?o=372&a=20331&s1=nka&s2=s&s3=e&s4=0',
+        tags: ['remote', 'entry-level']
+      },
+      { 
+        id: 3, 
+        title: 'Junior Data Analyst', 
+        note: 'No experience needed • Training provided', 
+        url: 'https://nx2bs.com/c?o=372&a=20331&s1=cha&s2=seo',
+        tags: ['entry-level', 'tech']
+      },
+      { 
+        id: 4, 
+        title: 'SEO Content Writer', 
+        note: 'Trending now • Work from anywhere', 
+        url: 'https://nx2bs.com/c?o=393&a=20331&s1=seo&s2=traffic',
+        tags: ['remote', 'writing']
+      },
+      { 
+        id: 5, 
+        title: 'Social Media Manager', 
+        note: 'FB paid traffic • Creative role', 
+        url: 'https://nx2bs.com/c?o=58&a=20331&s1=fb&s2=paid&s3=traffic&s4=campaign',
+        tags: ['marketing', 'remote']
+      },
     ];
 
-    // Redirect function
-    window.onload = function() {
-      const randomLink = links[Math.floor(Math.random() * links.length)];
-      window.location.href = randomLink; // same tab redirect
-    };
+    const grid = document.querySelector('section.grid');
+    const filterPanel = document.getElementById('filterPanel');
+    const filterBtn = document.getElementById('filterBtn');
+    const loading = document.getElementById('loading');
+
+    function createCard(offer) {
+      const card = document.createElement('article');
+      card.className = 'group relative overflow-hidden rounded-3xl p-5 sm:p-6 bg-white/80 dark:bg-white/5 border border-slate-200/70 dark:border-white/10 hover:shadow-2xl transition-all shadow-sm hover:border-emerald-300/50 dark:hover:border-emerald-400/30';
+      card.setAttribute('data-tags', offer.tags.join(' '));
+
+      card.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-bold">${offer.title}</h3>
+            <p class="text-sm mt-1 text-slate-600 dark:text-slate-300">${offer.note}</p>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              ${offer.tags.map(tag => `<span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800">${tag}</span>`).join('')}
+            </div>
+          </div>
+          <span class="text-2xl" aria-hidden="true">🚀</span>
+        </div>
+        <div class="mt-4">
+          <button class="goBtn px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white hover:opacity-90 transition focus-visible w-full font-medium">
+            Open & Apply
+          </button>
+        </div>
+        <a class="sr-only focus:not-sr-only focus:block focus:py-2 focus:px-4 focus:bg-emerald-600 focus:text-white focus:rounded-xl" href="${offer.url}">
+          Open ${offer.title}
+        </a>
+      `;
+
+      // click handlers
+      card.querySelector('.goBtn').addEventListener('click', () => {
+        loading.classList.remove('hidden');
+        grid.classList.add('opacity-50');
+        setTimeout(() => {
+          window.location.href = offer.url;
+        }, 300);
+      });
+
+      card.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') {
+          window.location.href = offer.url;
+        }
+      });
+
+      return card;
+    }
+
+    function render(list) {
+      grid.innerHTML = '';
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div class="sm:col-span-2 lg:col-span-3 py-10 text-center">
+            <p class="text-lg text-slate-600 dark:text-slate-300">No job offers match your filters.</p>
+            <button id="resetFilters" class="mt-4 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:opacity-90 transition focus-visible">
+              Reset filters
+            </button>
+          </div>
+        `;
+        document.getElementById('resetFilters').addEventListener('click', () => {
+          render(offers);
+        });
+      } else {
+        list.forEach(o => grid.appendChild(createCard(o)));
+      }
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function filterOffers() {
+      // Implement your filtering logic here
+      // For now just returns all offers
+      return offers;
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      render(offers);
+      document.getElementById('year').textContent = new Date().getFullYear();
+    });
+
+    // Actions
+    document.getElementById('shuffleBtn').addEventListener('click', () => {
+      render(shuffle(offers));
+    });
+
+    filterBtn.addEventListener('click', () => {
+      filterPanel.classList.toggle('hidden');
+      filterBtn.setAttribute('aria-expanded', filterPanel.classList.contains('hidden') ? 'false' : 'true');
+    });
+
+    // Close filter panel when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!filterPanel.contains(e.target) && e.target !== filterBtn) {
+        filterPanel.classList.add('hidden');
+        filterBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
   </script>
-</head>
-<body>
-  <p>Redirecting...</p>
 </body>
 </html>
